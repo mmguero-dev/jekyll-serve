@@ -27,24 +27,19 @@ jobs:
     # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
     name: Call Docker Build Jekyll
 
-    uses: bretfisher/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
+    # my fork of bretfisher/docker-build-workflow
+    uses: mmguero-dev/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
 
     permissions:
       contents: read
       packages: write # needed to push docker image to ghcr.io
       pull-requests: write # needed to create and update comments in PRs
     
-    secrets:
-
-      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
-
     with:
-      dockerhub-enable: true
+      dockerhub-enable: false
       ghcr-enable: true
       image-names: |
-        bretfisher/jekyll
-        ghcr.io/bretfisher/jekyll
+        ghcr.io/${{ github.repository_owner }}/jekyll
       platforms: linux/amd64,linux/arm64,linux/arm/v7
       target: jekyll
 
@@ -54,7 +49,7 @@ jobs:
     # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
     name: Call Docker Build Jekyll-Serve
 
-    uses: bretfisher/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
+    uses: mmguero-dev/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
 
     needs: build-jekyll-image
 
@@ -65,17 +60,11 @@ jobs:
       packages: write # needed to push docker image to ghcr.io
       pull-requests: write # needed to create and update comments in PRs
     
-    secrets:
-
-      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
-
     with:
-      dockerhub-enable: true
+      dockerhub-enable: false
       ghcr-enable: true
       image-names: |
-        bretfisher/jekyll-serve 
-        ghcr.io/bretfisher/jekyll-serve
+        ghcr.io/${{ github.repository_owner }}/jekyll-serve
       platforms: linux/amd64,linux/arm64,linux/arm/v7
       target: jekyll-serve
 
@@ -85,26 +74,20 @@ jobs:
     # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
     name: Call Docker Build Jekyll Alpine
 
-    uses: bretfisher/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
+    uses: mmguero-dev/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
 
     permissions:
       contents: read
       packages: write # needed to push docker image to ghcr.io
       pull-requests: write # needed to create and update comments in PRs
     
-    secrets:
-
-      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
-
     with:
-      dockerhub-enable: true
+      dockerhub-enable: false
       ghcr-enable: true
       file: alpine.Dockerfile
       comment-enable: false
       image-names: |
-        bretfisher/jekyll
-        ghcr.io/bretfisher/jekyll
+        ghcr.io/${{ github.repository_owner }}/jekyll
       tag-rules: |
         type=raw,value=alpine,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
         type=raw,value=alpine-stable-{{date 'YYYYMMDDHHmmss'}},enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
@@ -119,7 +102,7 @@ jobs:
     # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
     name: Call Docker Build Jekyll-Serve Alpine
 
-    uses: bretfisher/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
+    uses: mmguero-dev/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
 
     needs: build-jekyll-alpine-image
 
@@ -130,19 +113,13 @@ jobs:
       packages: write # needed to push docker image to ghcr.io
       pull-requests: write # needed to create and update comments in PRs
     
-    secrets:
-
-      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
-
     with:
-      dockerhub-enable: true
+      dockerhub-enable: false
       ghcr-enable: true
       file: alpine.Dockerfile
       comment-enable: false
       image-names: |
-        bretfisher/jekyll-serve 
-        ghcr.io/bretfisher/jekyll-serve
+        ghcr.io/${{ github.repository_owner }}/jekyll-serve
       tag-rules: |
         type=raw,value=alpine,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
         type=raw,value=alpine-stable-{{date 'YYYYMMDDHHmmss'}},enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}

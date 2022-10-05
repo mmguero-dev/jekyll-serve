@@ -1,12 +1,13 @@
 # Jekyll in a Docker Container
 
-[![GitHub Super-Linter](https://github.com/bretfisher/jekyll-serve/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
-[![Docker Build](https://github.com/BretFisher/jekyll-serve/actions/workflows/call-docker-build.yaml/badge.svg)](https://github.com/BretFisher/jekyll-serve/actions/workflows/call-docker-build.yaml)
+[![Docker Build](https://github.com/mmguero-dev/jekyll-serve/actions/workflows/call-docker-build.yaml/badge.svg)](https://github.com/mmguero-dev/jekyll-serve/actions/workflows/call-docker-build.yaml)
+
+Fork of [BretFisher/jekyll-serve](https://github.com/BretFisher/jekyll-serve).
 
 > But this has been done. Why not `docker run jekyll/jekyll`?
 
-- I wanted two images, one for easy CLI (`bretfisher/jekyll`) and one for
-easy local server for dev with sane defaults (`bretfisher/jekyll-serve`), which I use 90% of time
+- I wanted two images, one for easy CLI (`ghcr.io/mmguero-dev/jekyll`) and one for
+easy local server for dev with sane defaults (`ghcr.io/mmguero-dev/jekyll-serve`), which I use 90% of time
 - So you can start any Jekyll server with `docker-compose up`
 - I wanted to dev on a local jekyll site w/o having jekyll installed on my host OS
 - I wanted it to be as easy as possible to start
@@ -28,8 +29,8 @@ should pin all versions usually.)
 
 | Image | Purpose | Example |
 | ----- | ------- | ------- |
-| [bretfisher/jekyll](https://hub.docker.com/r/bretfisher/jekyll/) | Runs Jekyll by default with no options, good for general CLI commands | `docker run -v $(pwd):/site bretfisher/jekyll new .` |
-| [bretfisher/jekyll-serve](https://hub.docker.com/r/bretfisher/jekyll-serve/) | Runs Jekyll serve with sane defaults, good for local Jekyll site dev | `docker run -p 4000:4000 -v $(pwd):/site bretfisher/jekyll-serve` |
+| [ghcr.io/mmguero-dev/jekyll](https://github.com/mmguero-dev/jekyll/pkgs/container/jekyll/) | Runs Jekyll by default with no options, good for general CLI commands | `docker run -v $(pwd):/site ghcr.io/mmguero-dev/jekyll new .` |
+| [ghcr.io/mmguero-dev/jekyll-serve](https://github.com/mmguero-dev/jekyll/pkgs/container/jekyll-serve/) | Runs Jekyll serve with sane defaults, good for local Jekyll site dev | `docker run -p 4000:4000 -v $(pwd):/site ghcr.io/mmguero-dev/jekyll-serve` |
 | `:alpine` tag | Runs an Alpine variant of the above images | |
 
 ## Getting Started
@@ -38,14 +39,14 @@ Creating a site:
 
 ```shell
 cd to empty directory
-docker run -v $(pwd):/site bretfisher/jekyll new .
+docker run -v $(pwd):/site ghcr.io/mmguero-dev/jekyll new .
 ```
 
 Start a local server with sane defaults listening on port 4000:
 
 ```shell
 cd dir/of/your/jekyll/site
-docker run -p 4000:4000 -v $(pwd):/site bretfisher/jekyll-serve
+docker run -p 4000:4000 -v $(pwd):/site ghcr.io/mmguero-dev/jekyll-serve
 ```
 
 That's it!
@@ -54,7 +55,7 @@ Details: it will mount your current path into the containers `/site`, `bundle in
 `jekyll serve` to , serve it at `http://<docker-host>:4000`.
 
 To make this even easier, copy `docker-compose.yml`
-[from this repository](https://github.com/BretFisher/jekyll-serve/blob/master/docker-compose.yml)
+[from this repository](https://github.com/mmguero-dev/jekyll-serve/blob/master/docker-compose.yml)
 to your jekyll site root. Then you'll only need to:
 
 ```shell
@@ -79,10 +80,10 @@ docker-compose up
 
 **Q. What if I want to run other jekyll commands?**
 
-just add the jekyll options to the end of the `bretfisher/jekyll`:
+just add the jekyll options to the end of the `ghcr.io/mmguero-dev/jekyll`:
 
 ```shell
-docker run -v $(pwd):/site bretfisher/jekyll doctor
+docker run -v $(pwd):/site ghcr.io/mmguero-dev/jekyll doctor
 ```
 
 ## License

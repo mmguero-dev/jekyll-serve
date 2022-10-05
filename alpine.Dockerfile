@@ -19,7 +19,7 @@ ENTRYPOINT [ "jekyll" ]
 CMD [ "--help" ]
 
 # build from the image we just built with different metadata
-FROM ghcr.io/bretfisher/jekyll:alpine as jekyll-serve
+FROM ghcr.io/mmguero-dev/jekyll:alpine as jekyll-serve
 
 # on every container start, check if Gemfile exists and warn if it's missing
 ENTRYPOINT [ "docker-entrypoint.sh" ]

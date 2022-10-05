@@ -2,7 +2,7 @@
 
 services:
   jekyll:
-    image: bretfisher/jekyll-serve
+    image: ghcr.io/mmguero-dev/jekyll-serve
     volumes:
       - .:/site
     ports:
