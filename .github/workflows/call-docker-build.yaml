@@ -14,7 +14,8 @@ on:
       - 'Dockerfile'
       - '.github/workflows/call-docker-build.yaml'
       - 'docker-entrypoint.sh'
-
+  workflow_dispatch:
+  repository_dispatch:
   schedule:
     # re-run montly to keep image fresh with upstream base images
     - cron: '0 12 15 * *'
