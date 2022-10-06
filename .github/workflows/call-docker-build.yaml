@@ -54,7 +54,7 @@ jobs:
 
     needs: build-jekyll-image
 
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch' || github.event_name == 'schedule'
 
     permissions:
       contents: read
@@ -107,7 +107,7 @@ jobs:
 
     needs: build-jekyll-alpine-image
 
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch' || github.event_name == 'schedule'
 
     permissions:
       contents: read
