@@ -33,10 +33,12 @@ jobs:
 
     permissions:
       contents: read
-      packages: write # needed to push docker image to ghcr.io
-      pull-requests: write # needed to create and update comments in PRs
+      actions: write
+      packages: write
+      pull-requests: write
     
     with:
+      cancel-previous-runs: true
       dockerhub-enable: false
       ghcr-enable: true
       image-names: |
@@ -58,10 +60,12 @@ jobs:
 
     permissions:
       contents: read
-      packages: write # needed to push docker image to ghcr.io
-      pull-requests: write # needed to create and update comments in PRs
+      actions: write
+      packages: write
+      pull-requests: write
     
     with:
+      cancel-previous-runs: false
       dockerhub-enable: false
       ghcr-enable: true
       image-names: |
@@ -79,10 +83,12 @@ jobs:
 
     permissions:
       contents: read
-      packages: write # needed to push docker image to ghcr.io
-      pull-requests: write # needed to create and update comments in PRs
+      actions: write
+      packages: write
+      pull-requests: write
     
     with:
+      cancel-previous-runs: false
       dockerhub-enable: false
       ghcr-enable: true
       file: alpine.Dockerfile
@@ -111,10 +117,12 @@ jobs:
 
     permissions:
       contents: read
-      packages: write # needed to push docker image to ghcr.io
-      pull-requests: write # needed to create and update comments in PRs
+      actions: write
+      packages: write
+      pull-requests: write
     
     with:
+      cancel-previous-runs: false
       dockerhub-enable: false
       ghcr-enable: true
       file: alpine.Dockerfile
