@@ -1,5 +1,5 @@
 ---
-name: Docker Build
+name: call-docker-build
 
 on:
   push:
@@ -20,55 +20,85 @@ on:
     # re-run montly to keep image fresh with upstream base images
     - cron: '0 12 15 * *'
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PLATFORM: linux/amd64,linux/arm64
+  REPO_CONTEXT: .
+  REPO_CONTAINERFILE: ./Dockerfile
+
 jobs:
-
-  build-jekyll-image:
-
-    # use Reusable Workflows
-    # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
-    name: Call Docker Build Jekyll
-
-    # my fork of bretfisher/docker-build-workflow
-    uses: mmguero-dev/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
-
+  buildpushscan:
+    runs-on: ubuntu-latest
     permissions:
-      contents: read
       actions: write
       packages: write
-      pull-requests: write
-    
-    with:
-      cancel-previous-runs: true
-      dockerhub-enable: false
-      ghcr-enable: true
-      image-names: |
-        ghcr.io/${{ github.repository_owner }}/jekyll
-      platforms: linux/amd64,linux/arm64
-      target: jekyll
-
-  build-jekyll-serve-image:
-
-    # use Reusable Workflows
-    # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
-    name: Call Docker Build Jekyll-Serve
-
-    uses: mmguero-dev/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
-
-    needs: build-jekyll-image
-
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch' || github.event_name == 'schedule'
-
-    permissions:
       contents: read
-      actions: write
-      packages: write
-      pull-requests: write
-    
-    with:
-      cancel-previous-runs: false
-      dockerhub-enable: false
-      ghcr-enable: true
-      image-names: |
-        ghcr.io/${{ github.repository_owner }}/jekyll-serve
-      platforms: linux/amd64,linux/arm64
-      target: jekyll-serve
+      security-events: write
+    steps:
+      -
+        name: Cancel previous run in progress
+        id: cancel-previous-runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          ignore_sha: true
+          all_but_latest: true
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Checkout
+        id: repo-checkout
+        uses: actions/checkout@v3
+      -
+        name: Set up QEMU
+        id: setup-qemu
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Log in to registry
+        id: registry-login
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Build jekyll image
+        id: build-jekyll-image
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ env.REPO_CONTEXT }}
+          file: ${{ env.REPO_CONTAINERFILE }}
+          push: true
+          target: jekyll
+          tags: ghcr.io/${{ github.repository_owner }}/jekyll:latest
+          platforms: ${{ env.IMAGE_PLATFORM }}
+      -
+        name: Build jekyll-serve image
+        id: build-jekyll-serve-image
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ env.REPO_CONTEXT }}
+          file: ${{ env.REPO_CONTAINERFILE }}
+          push: true
+          target: jekyll-serve
+          tags: ghcr.io/${{ github.repository_owner }}/jekyll-serve:latest
+          platforms: ${{ env.IMAGE_PLATFORM }}
+      -
+        name: Run Trivy vulnerability scanner
+        id: trivy-scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          scanners: 'vuln'
+          image-ref: ghcr.io/${{ github.repository_owner }}/jekyll:latest
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'HIGH,CRITICAL'
+          vuln-type: 'os,library'
+          hide-progress: true
+          ignore-unfixed: true
+          exit-code: '0'
+      -
+        name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
