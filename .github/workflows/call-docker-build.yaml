@@ -22,7 +22,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PLATFORM: linux/amd64,linux/arm64
+  IMAGE_PLATFORMS: linux/amd64,linux/arm64
   REPO_CONTEXT: .
   REPO_CONTAINERFILE: ./Dockerfile
 
@@ -51,6 +51,8 @@ jobs:
         name: Set up QEMU
         id: setup-qemu
         uses: docker/setup-qemu-action@v2
+        with:
+          platforms: amd64,arm64
       -
         name: Log in to registry
         id: registry-login
@@ -69,7 +71,7 @@ jobs:
           push: true
           target: jekyll
           tags: ghcr.io/${{ github.repository_owner }}/jekyll:latest
-          platforms: ${{ env.IMAGE_PLATFORM }}
+          platforms: ${{ env.IMAGE_PLATFORMS }}
       -
         name: Build jekyll-serve image
         id: build-jekyll-serve-image
@@ -80,7 +82,7 @@ jobs:
           push: true
           target: jekyll-serve
           tags: ghcr.io/${{ github.repository_owner }}/jekyll-serve:latest
-          platforms: ${{ env.IMAGE_PLATFORM }}
+          platforms: ${{ env.IMAGE_PLATFORMS }}
       -
         name: Run Trivy vulnerability scanner
         id: trivy-scan
