@@ -4,16 +4,16 @@ name: call-docker-build
 on:
   push:
     branches:
-      - 'main'
+      - "main"
     paths:
-      - 'Dockerfile'
-      - '.github/workflows/call-docker-build.yaml'
-      - 'docker-entrypoint.sh'
+      - "Dockerfile"
+      - ".github/workflows/call-docker-build.yaml"
+      - "docker-entrypoint.sh"
   pull_request:
     paths:
-      - 'Dockerfile'
-      - '.github/workflows/call-docker-build.yaml'
-      - 'docker-entrypoint.sh'
+      - "Dockerfile"
+      - ".github/workflows/call-docker-build.yaml"
+      - "docker-entrypoint.sh"
   workflow_dispatch:
   repository_dispatch:
   schedule:
