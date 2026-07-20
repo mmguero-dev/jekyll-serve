@@ -1,4 +1,4 @@
-FROM ruby:4.0.1-slim-trixie as jekyll
+FROM ruby:3.3-slim-trixie AS jekyll
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
