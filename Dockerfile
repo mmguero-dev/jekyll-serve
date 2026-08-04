@@ -1,4 +1,4 @@
-FROM ruby:3.3-slim-trixie AS jekyll
+FROM ruby:3.1-slim-bookworm AS jekyll
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
