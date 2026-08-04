@@ -1,6 +1,5 @@
 ---
 name: call-docker-build
-
 on:
   push:
     branches:
@@ -19,57 +18,44 @@ on:
   schedule:
     # re-run montly to keep image fresh with upstream base images
     - cron: '0 12 15 * *'
-
 env:
   REGISTRY: ghcr.io
   IMAGE_PLATFORMS: linux/amd64,linux/arm64
   REPO_CONTEXT: .
   REPO_CONTAINERFILE: ./Dockerfile
-
+concurrency:
+  group: jekyll-call-docker-build-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   buildpushscan:
     runs-on: ubuntu-latest
     permissions:
-      actions: write
       packages: write
       contents: read
       security-events: write
     steps:
-      -
-        name: Cancel previous run in progress
-        id: cancel-previous-runs
-        uses: styfle/cancel-workflow-action@0.11.0
-        with:
-          ignore_sha: true
-          all_but_latest: true
-          access_token: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Checkout
+      - name: Checkout
         id: repo-checkout
         uses: actions/checkout@v3
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         id: setup-qemu
         uses: docker/setup-qemu-action@v2
         with:
           platforms: amd64,arm64
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         id: setup-buildx
         uses: docker/setup-buildx-action@v2
         with:
           driver-opts: |
             image=moby/buildkit:master
-      -
-        name: Log in to registry
+      - name: Log in to registry
         id: registry-login
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build jekyll image
+      - name: Build jekyll image
         id: build-jekyll-image
         uses: docker/build-push-action@v3
         with:
@@ -79,8 +65,7 @@ jobs:
           target: jekyll
           tags: ghcr.io/${{ github.repository_owner }}/jekyll:latest
           platforms: ${{ env.IMAGE_PLATFORMS }}
-      -
-        name: Build jekyll-serve image
+      - name: Build jekyll-serve image
         id: build-jekyll-serve-image
         uses: docker/build-push-action@v3
         with:
@@ -90,8 +75,7 @@ jobs:
           target: jekyll-serve
           tags: ghcr.io/${{ github.repository_owner }}/jekyll-serve:latest
           platforms: ${{ env.IMAGE_PLATFORMS }}
-      -
-        name: Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner
         id: trivy-scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -105,8 +89,7 @@ jobs:
           hide-progress: true
           ignore-unfixed: true
           exit-code: '0'
-      -
-        name: Upload Trivy scan results to GitHub Security tab
+      - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
